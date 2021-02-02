@@ -1,0 +1,46 @@
+{
+    "aero_units": {
+        "i": "(-)",
+        "z": "(km)",
+        "p": "(mb)",
+        "t": "(k)",
+        "cntmfrn": "mol/cm2",
+        "hno3": "km",
+        "aerosol_1": "atm_cm/km(-)",
+        "aerosol_2": "(-)",
+        "aerosol_3": "(-)",
+        "aerosol_4": "(-)",
+        "aer1*rh": "(-)",
+        "cirrus": "(-)",
+        "rh": "(percnt)"
+    },
+    "mol_units": {
+        "i": "(-)",
+        "z": "(km)",
+        "p": "(mb)",
+        "t": "(k)",
+        "h2o": "atm_cm/km",
+        "o3": "atm_cm/km",
+        "co2": "atm_cm/km",
+        "co": "atm_cm/km",
+        "ch4": "atm_cm/km",
+        "n2o": "atm_cm/km",
+        "o2": "atm_cm/km",
+        "nh3": "atm_cm/km",
+        "no": "atm_cm/km",
+        "no2": "atm_cm/km",
+        "so2": "atm_cm/km"
+    },
+    "o3_units": {
+        "i": "(-)",
+        "z": "(km)",
+        "p": "(mb)",
+        "t": "(k)",
+        "n2": "(mol/cm2",
+        "cntmslf": "km)",
+        "mol_scat": "(-)",
+        "n-1": "(-)",
+        "o3": "(atm_cm/km)",
+        "o2": "(atm_cm/km)"
+    }
+}
