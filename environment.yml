@@ -1,0 +1,19 @@
+name: modtran
+channels:
+  - eoas_ubc
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - dash
+  - pandas
+  - flask
+  - numpy>1.19
+  - matplotlib
+  - pip
+  - numpy
+  - fastparquet
+  - snappy
+  - python-snappy
+  - conda-lock
+# conda-lock -f environment.yml -p linux-64
