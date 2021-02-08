@@ -11,7 +11,7 @@
 
       conda-lock -f environment.yml -p linux-64
 
-3\) create the modtran environment and activate it
+3\) create the modtran environment
  
       mamba create --name modtran --file conda-linux-64.lock
 
