@@ -7,7 +7,7 @@
       conda activate base
       conda install -c conda-forge python=3.8 mamba conda-lock
 
-\) build the lockfile from environment.yml
+2\) build the lockfile from environment.yml
 
       conda-lock -f environment.yml -p linux-64
 
