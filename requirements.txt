@@ -1,9 +1,0 @@
-dash
-gunicorn
-flask
-pandas
-#numpy
-plotly
-fastparquet
-pyarrow
-#gcc7
