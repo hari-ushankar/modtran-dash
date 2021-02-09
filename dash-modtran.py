@@ -9,10 +9,11 @@ import dash_html_components as html
 #import plotly.express as px
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 ####--import libraries for modtran stuff
 import numpy as np
 #import scipy as sp
-#import math
+import math
 #import matplotlib.pyplot as plt
 #import numpy as np
 import json
@@ -48,18 +49,21 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 ####-----App layout----####
 
-app.layout=html.Div([
-    dcc.Markdown('''
+app.layout=html.Div(
+    [
+    dbc.Row(dbc.Col(dcc.Markdown('''
         # MODTRAN Infrared Light in the Atmosphere
 
-        ----------
-        '''),
-html.Div([
-    dcc.Markdown('''
+        -----------------------------------
+        ''', style={'width': '78%', 'display': 'inline-block'}))),
+
+    dbc.Row(
+        [
+        dcc.Markdown('''
         ## Select parameters
         '''),
     dcc.Markdown('''
-    ### CO2 concentration'''),  
+    #### CO2 concentration'''),  
     dcc.Dropdown(
 			id='co2',
 			options=[
@@ -73,7 +77,7 @@ html.Div([
             optionHeight = 40,
 		),
     dcc.Markdown('''
-    ### Altitude'''),
+    #### Altitude'''),
      dcc.Dropdown(
 			id='altitude',
 			options=[
@@ -81,19 +85,30 @@ html.Div([
 						{'label':'70 km - Upper Atmosphere','value': '70'},
 					],
 			value='20',
-			placeholder="Select Altitude (in kms) "
-		),
-    dcc.Graph(id ='rad-spec-1',figure={'layout': {
+			placeholder="Select Altitude (in kms)"
+		)
+        ]
+        ),
+    dbc.Row(
+    [
+        dbc.Col(dcc.Graph(id ='rad-spec-1',figure={'layout': {
                                 'height': 800,
                                 'margin': {'l': 10, 'b': 20, 't': 0, 'r': 0}
-                            }}),
-    dcc.Markdown('''### Total radiance plot:'''),
-    dcc.Graph(id='total-radiance',figure={'layout': {
+                            }})),
+
+    dbc.Col(
+    [
+        dcc.Markdown('''### Total radiance plot:'''),
+        dcc.Graph(id='total-radiance',figure={'layout': {
                                 'height': 800,
                                 'margin': {'l': 10, 'b': 20, 't': 0, 'r': 0}
-                            }}),
-    dcc.Markdown('''
-    ## Generate Atmospheric profiles
+                            }})
+    ]),
+
+    dbc.Col(
+        [
+        dcc.Markdown('''
+    ### Atmospheric profiles
     '''),
     dcc.Markdown('''
         ### Select X-axis data:
@@ -105,17 +120,15 @@ html.Div([
                 {'label':'Pressure(mbar)', 'value':'p'},
                 {'label':'O2(atm cm/km)', 'value':'o2'},
                 {'label':'N2(mol/cm2)','value':'n2'}
-            ],
+            ]   ,
             value='t',
             placeholder="Select X-axis data"
+        ),    
+        dcc.Graph(id ='atmospheric-profiles')
+        ])
+    ],
         ),
-    ], style={'width': '78%', 'display': 'inline-block'}),
-  
-    dcc.Graph(id ='atmospheric-profiles'),
-    #refresh_plots,
-    #mathjax_script
-], style={'columnCount': 4})
-
+])
 @app.callback(
     Output('rad-spec-1', 'figure'),
     Input('altitude','value'),
@@ -131,16 +144,11 @@ def rad_spec_1(altitude,co2):
     tot_transm = df[df.keys()[-1]]
     total_rad = df[df.keys()[-3]]
     scaled_intensity = (tot_transm*planck(df[df.keys()[1]]*1e-6,300.))/1e6
-
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=wavelength_um, y=tot_transm,
                     mode='lines',
                     name='Model'))
-
-    
-
-    #fig.update_layout()
-    fig.update_xaxes(title_text=r'Wavelength in $\mu$ m', range=[0, 30])
+    fig.update_xaxes(title_text='Wavelength in micrometers', range=[0, 30])
     fig.update_yaxes(title_text='Total transmisivity')
     fig.layout.height = 600
     fig.layout.width = 550
@@ -187,7 +195,7 @@ def rad_spec_2(altitude,co2):
                 mode='lines',
                 name='300 K'))
  
-    fig.update_layout(xaxis_title='Wavelength in $$\mu$$ m', yaxis_title='Intensity W m-2 um-1')
+    fig.update_layout(xaxis_title='Wavelength in micrometers', yaxis_title='Intensity W m-2 um-1')
     fig.update_xaxes(range=[0, 30])
     fig.layout.height = 600
     fig.layout.width = 600
