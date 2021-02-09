@@ -74,7 +74,8 @@ app.layout=html.Div(
     ),
     dbc.Row(
     [
-    dcc.Markdown('''
+    dbc.Col([
+        dcc.Markdown('''
     #### CO2 concentration'''),  
     dcc.Dropdown(
 			id='co2',
@@ -87,9 +88,10 @@ app.layout=html.Div(
 			value='0',
 			placeholder="Select CO2 concentration ",
             optionHeight = 40,
-            style={'width':'30%', 'display': 'inline-block'}
-		),
-    dcc.Markdown('''
+            style={'width':'50%', 'display': 'inline-block'}
+		)]),
+    dbc.Col([
+        dcc.Markdown('''
     #### Altitude (Looking down)'''),
      dcc.Dropdown(
 			id='altitude',
@@ -99,10 +101,11 @@ app.layout=html.Div(
 					],
 			value='20',
 			placeholder="Select Altitude (in kms)",
-            style={'width':'30%', 'display': 'inline-block'}
-		),
+            style={'width':'60%', 'display': 'inline-block'}
+		)]
+        ),
 
-        dcc.Dropdown(
+        dbc.Col(dcc.Dropdown(
             id='xaxis_data',
             options=[
                 {'label': 'T(K)', 'value':'t'},
@@ -112,8 +115,8 @@ app.layout=html.Div(
             ]   ,
             value='t',
             placeholder="Select X-axis data",
-            style={'width':'25%', 'display': 'inline-block'}
-        ),   
+            style={'width':'45%', 'display': 'inline-block'}
+        )),   
         ],
         no_gutters=True
         ),
