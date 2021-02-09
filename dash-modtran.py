@@ -42,7 +42,7 @@ def planck(wav, T):
 with open('toc_files.json','r') as infile:
     co2_dict = json.load(infile)
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -51,17 +51,29 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout=html.Div(
     [
-    dbc.Row(dbc.Col(dcc.Markdown('''
+    dbc.Row(dbc.Col(
+        dcc.Markdown('''
         # MODTRAN Infrared Light in the Atmosphere
 
         -----------------------------------
-        ''', style={'width': '78%', 'display': 'inline-block'}))),
+        ''', 
+        style={'width': '100%', 'display': 'inline-block'})
+        ,width={"size": 8, "offset": 3},)
+        ),
 
     dbc.Row(
         [
-        dcc.Markdown('''
-        ## Select parameters
-        '''),
+        dbc.Col(dcc.Markdown('''
+        ## Select parameters:
+        '''), width={"size": 3, "offset": 3}),
+        dbc.Col(dcc.Markdown('''
+        ## Select x-axis data:
+        '''),width={"size": 3, "order": "last","offset": 2})
+    ],
+    no_gutters=True,
+    ),
+    dbc.Row(
+    [
     dcc.Markdown('''
     #### CO2 concentration'''),  
     dcc.Dropdown(
@@ -75,9 +87,10 @@ app.layout=html.Div(
 			value='0',
 			placeholder="Select CO2 concentration ",
             optionHeight = 40,
+            style={'width':'30%', 'display': 'inline-block'}
 		),
     dcc.Markdown('''
-    #### Altitude'''),
+    #### Altitude (Looking down)'''),
      dcc.Dropdown(
 			id='altitude',
 			options=[
@@ -85,47 +98,40 @@ app.layout=html.Div(
 						{'label':'70 km - Upper Atmosphere','value': '70'},
 					],
 			value='20',
-			placeholder="Select Altitude (in kms)"
-		)
-        ]
-        ),
-    dbc.Row(
-    [
-        dbc.Col(dcc.Graph(id ='rad-spec-1',figure={'layout': {
-                                'height': 800,
-                                'margin': {'l': 10, 'b': 20, 't': 0, 'r': 0}
-                            }})),
+			placeholder="Select Altitude (in kms)",
+            style={'width':'30%', 'display': 'inline-block'}
+		),
 
-    dbc.Col(
-    [
-        dcc.Markdown('''### Total radiance plot:'''),
-        dcc.Graph(id='total-radiance',figure={'layout': {
-                                'height': 800,
-                                'margin': {'l': 10, 'b': 20, 't': 0, 'r': 0}
-                            }})
-    ]),
-
-    dbc.Col(
-        [
-        dcc.Markdown('''
-    ### Atmospheric profiles
-    '''),
-    dcc.Markdown('''
-        ### Select X-axis data:
-        '''),
         dcc.Dropdown(
             id='xaxis_data',
             options=[
                 {'label': 'T(K)', 'value':'t'},
-                {'label':'Pressure(mbar)', 'value':'p'},
-                {'label':'O2(atm cm/km)', 'value':'o2'},
-                {'label':'N2(mol/cm2)','value':'n2'}
+                {'label':'Pressure (mbar)', 'value':'p'},
+                {'label':'O2 (atm cm/km)', 'value':'o2'},
+                {'label':'N2 (mol/cm2)','value':'n2'}
             ]   ,
             value='t',
-            placeholder="Select X-axis data"
-        ),    
+            placeholder="Select X-axis data",
+            style={'width':'25%', 'display': 'inline-block'}
+        ),   
+        ],
+        no_gutters=True
+        ),
+    dbc.Row(
+    [
+        dbc.Col(
+            dcc.Graph(id ='rad-spec-1',style={'width':'40%', 'display': 'inline-block'}),
+                            ),
+
+    dbc.Col(
+    [
+        dcc.Graph(id='total-radiance', style={'width':'40%', 'display': 'inline-block'}),
+    ]),
+
+    dbc.Col(
+        [ 
         dcc.Graph(id ='atmospheric-profiles')
-        ])
+        ],)
     ],
         ),
 ])
@@ -211,7 +217,7 @@ def rad_spec_2(altitude,co2):
 
 # %%
 def atmos_profile(altitude,co2,xaxis_data):
-    options_gases = ['T(K)','Pressure(mbar)','O2(atm cm/km)','N2(mol/cm2)']
+    options_gases = ['T(K)','Pressure (mbar)','O2 (atm cm/km)','N2 (mol/cm2)']
     dict_atmospheric = {'t':options_gases[0],'p':options_gases[1],'o2':options_gases[2],'n2':options_gases[3] }
     the_dir = co2_dict[altitude][co2]
     keep_profs = dict()
@@ -226,7 +232,7 @@ def atmos_profile(altitude,co2,xaxis_data):
     fig.add_trace(go.Scatter(x=x2_values, y=y2_values,
                     mode='lines'))
     fig.update_layout(xaxis_title='{}'.format(dict_atmospheric[xaxis_data]), yaxis_title='Altitude z (km)')
-    fig.layout.height = 800
+    fig.layout.height = 750
     fig.layout.width = 400
     return fig
 
