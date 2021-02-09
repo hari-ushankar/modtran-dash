@@ -1,0 +1,2 @@
+conda install -c plotly plotly_express
+conda install -c conda-forge snappy fastparquet python-snappy dash numpy pandas pyarrow  
