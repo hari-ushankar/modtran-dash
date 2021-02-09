@@ -134,7 +134,6 @@ if __name__ == "__main__":
     keep_dict = {}
     files = list(Path().glob("*co2*.txt"))
     print(files)
-    files=files[1:]
     co2 = [grabnum.search(str(item)).group(1) for item in files]
     altitude = [grabnum.search(str(item)).group(2) for item in files]
     print(co2)

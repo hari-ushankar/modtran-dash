@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
 
-###-- import libraries here
+###-- import dash libraries here
 from flask import Flask
 from os import environ
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+#import plotly.express as px
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 ####--import libraries for modtran stuff
 import numpy as np
-import numpy as np
+#import scipy as sp
+#import math
+#import matplotlib.pyplot as plt
+#import numpy as np
 import json
 from pathlib import Path
 import pandas as pd
-import math
+#import dash_defer_js_import as dji
+#mathjax_script = dji.Import(src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_SVG")
+#refresh_plots = dji.Import("https://codepen.io/chrisvoncsefalvay/pen/ExPJjWP.js")
 pi = np.pi
 h = 6.626e-34
 c = 3.0e+8
@@ -35,17 +41,9 @@ def planck(wav, T):
 with open('toc_files.json','r') as infile:
     co2_dict = json.load(infile)
 
-
-###--- Setting the stylesheets and server
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-server = Flask(__name__)
-
-app = dash.Dash(
-    server=server,
-    url_base_pathname=environ.get('JUPYTERHUB_SERVICE_PREFIX','/',),
-    external_stylesheets=external_stylesheets
-    )
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
 ####-----App layout----####
@@ -116,7 +114,7 @@ html.Div([
     dcc.Graph(id ='atmospheric-profiles'),
     #refresh_plots,
     #mathjax_script
-])
+], style={'columnCount': 4})
 
 @app.callback(
     Output('rad-spec-1', 'figure'),
