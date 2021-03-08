@@ -85,11 +85,27 @@ app.layout=html.Div(
 						{'label':'100 ppm','value': '100'},
 						{'label':'1000 ppm','value': '1000'},
 					],
-			value='0',
+			value='1000',
 			placeholder="Select CO2 concentration ",
             optionHeight = 40,
             style={'width':'50%', 'display': 'inline-block'}
-		)]),
+		),
+          dcc.Checklist(
+                id='surf_trans',
+                options=[
+                    {'label':'Surface transmission (ST)', 'value': 'T'}
+                ],
+                value=['T'],
+                labelStyle={'display': 'inline-block'}
+            ),
+              dcc.Checklist(
+                id='atmos_trans',
+                options=[
+                    {'label':'Top of atmosphere - surface (AS)', 'value': 'T'}
+                ],
+                value=['T'],
+                labelStyle={'display': 'inline-block'}
+            )]),
     dbc.Col([
         dcc.Markdown('''
     #### Altitude (Looking down)'''),
@@ -122,10 +138,11 @@ app.layout=html.Div(
         ),
     dbc.Row(
     [
-        dbc.Col(
-            dcc.Graph(id ='rad-spec-1',style={'width':'40%', 'display': 'inline-block'}),
+    dbc.Col(
+        [
+            dcc.Graph(id ='transm',style={'width':'40%', 'display': 'inline-block'}),
+        ]
                             ),
-
     dbc.Col(
     [
         dcc.Graph(id='total-radiance', style={'width':'40%', 'display': 'inline-block'}),
@@ -139,28 +156,64 @@ app.layout=html.Div(
         ),
 ])
 @app.callback(
-    Output('rad-spec-1', 'figure'),
+    Output('transm', 'figure'),
     Input('altitude','value'),
     Input('co2','value'),
+    Input('surf_trans','value'),
+    Input('atmos_trans','value'),
     )  
-
-def rad_spec_1(altitude,co2):
+def transm(altitude,co2,surf_trans,atmos_trans):
     the_dir = co2_dict[altitude][co2]
     dir_name = Path(the_dir)
     pqfile = dir_name / 'rad_spectrum.pq'
     df = pd.read_parquet(pqfile)
     wavelength_um = df[df.keys()[1]]
-    tot_transm = df[df.keys()[-1]]
+    zer_array = np.zeros(wavelength_um.size)
     total_rad = df[df.keys()[-3]]
-    scaled_intensity = (tot_transm*planck(df[df.keys()[1]]*1e-6,300.))/1e6
+    tot_transmis = df[df.keys()[-1]]
+    scaled_intensity = (tot_transmis*planck(df[df.keys()[1]]*1e-6,299.7))/1e6
+    atmosphere_contrib = total_rad*np.pi*1e4 - scaled_intensity
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=wavelength_um, y=tot_transm,
-                    mode='lines',
-                    name='Model'))
+    if(surf_trans[0]=='T'):
+        fig.add_trace(go.Scatter(x=wavelength_um, y=scaled_intensity,
+                        mode='lines',name='ST'))
+    else:
+        fig.add_trace(go.Scatter(x=wavelength_um, y=zer_array,
+                    mode='lines',name='ST'))
+    if(atmos_trans[0]=='T'):
+        fig.add_trace(go.Scatter(x=wavelength_um, y=atmosphere_contrib,
+                                mode='lines',name='AS'))
+    else:
+          fig.add_trace(go.Scatter(x=wavelength_um, y=zer_array,
+                    mode='lines',name='AS'))  
     fig.update_xaxes(title_text='Wavelength in micrometers', range=[0, 30])
-    fig.update_yaxes(title_text='Total transmisivity')
-    fig.layout.height = 600
+    fig.update_yaxes(title_text='Flux in W m-2 micron-1')
+    fig.layout.height = 650
     fig.layout.width = 550
+    return fig
+# @app.callback(
+#     Output('rad-spec-1', 'figure'),
+#     Input('altitude','value'),
+#     Input('co2','value'),
+#     )  
+
+# def rad_spec_1(altitude,co2):
+#     the_dir = co2_dict[altitude][co2]
+#     dir_name = Path(the_dir)
+#     pqfile = dir_name / 'rad_spectrum.pq'
+#     df = pd.read_parquet(pqfile)
+#     wavelength_um = df[df.keys()[1]]
+#     tot_transm = df[df.keys()[-1]]
+#     total_rad = df[df.keys()[-3]]
+#     scaled_intensity = (tot_transm*planck(df[df.keys()[1]]*1e-6,300.))/1e6
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=wavelength_um, y=tot_transm,
+#                     mode='lines',
+#                     name='Model'))
+#     fig.update_xaxes(title_text='Wavelength in micrometers', range=[0, 30])
+#     fig.update_yaxes(title_text='Total transmisivity')
+#     fig.layout.height = 600
+#     fig.layout.width = 550
     return fig
 
 @app.callback(
@@ -204,7 +257,7 @@ def rad_spec_2(altitude,co2):
                 mode='lines',
                 name='300 K'))
  
-    fig.update_layout(xaxis_title='Wavelength in micrometers', yaxis_title='Intensity W m-2 um-1')
+    fig.update_layout(xaxis_title='Wavelength in micrometers', yaxis_title='Flux W m-2 um-1')
     fig.update_xaxes(range=[0, 30])
     fig.layout.height = 600
     fig.layout.width = 600
@@ -235,8 +288,8 @@ def atmos_profile(altitude,co2,xaxis_data):
     fig.add_trace(go.Scatter(x=x2_values, y=y2_values,
                     mode='lines'))
     fig.update_layout(xaxis_title='{}'.format(dict_atmospheric[xaxis_data]), yaxis_title='Altitude z (km)')
-    fig.layout.height = 750
-    fig.layout.width = 400
+    fig.layout.height = 700
+    fig.layout.width = 450
     return fig
 
 if __name__ == '__main__':

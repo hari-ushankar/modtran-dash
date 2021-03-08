@@ -18,6 +18,14 @@ app.layout = html.Div(
             ],
             align="start",
         ),
+              dcc.Checklist(
+                id='surf_trans',
+                options=[
+                    {'label':'Surface transmission', 'value': 'T'}
+                ],
+                value=['T'],
+                labelStyle={'display': 'inline-block'}
+            ),
         dbc.Row(
             [
                 dbc.Col(html.Div("One of three columns")),
