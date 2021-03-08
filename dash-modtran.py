@@ -174,18 +174,18 @@ def transm(altitude,co2,surf_trans,atmos_trans):
     scaled_intensity = (tot_transmis*planck(df[df.keys()[1]]*1e-6,299.7))/1e6
     atmosphere_contrib = total_rad*np.pi*1e4 - scaled_intensity
     fig = go.Figure()
-    if(surf_trans[0]=='T'):
-        fig.add_trace(go.Scatter(x=wavelength_um, y=scaled_intensity,
-                        mode='lines',name='ST'))
-    else:
+    if not surf_trans:
         fig.add_trace(go.Scatter(x=wavelength_um, y=zer_array,
                     mode='lines',name='ST'))
-    if(atmos_trans[0]=='T'):
+    else:
+        fig.add_trace(go.Scatter(x=wavelength_um, y=scaled_intensity,
+                        mode='lines',name='ST'))
+    if not atmos_trans:
+        fig.add_trace(go.Scatter(x=wavelength_um, y=zer_array,
+                    mode='lines',name='AS'))
+    else:
         fig.add_trace(go.Scatter(x=wavelength_um, y=atmosphere_contrib,
                                 mode='lines',name='AS'))
-    else:
-          fig.add_trace(go.Scatter(x=wavelength_um, y=zer_array,
-                    mode='lines',name='AS'))  
     fig.update_xaxes(title_text='Wavelength in micrometers', range=[0, 30])
     fig.update_yaxes(title_text='Flux in W m-2 micron-1')
     fig.layout.height = 650
