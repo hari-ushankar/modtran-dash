@@ -41,7 +41,8 @@ def planck(wav, T):
 
 with open('toc_files.json','r') as infile:
     co2_dict = json.load(infile)
-
+with open('toc_files_wvs.json','r') as infile:
+    wvs_dict = json.load(infile)
 external_stylesheets = ["https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -118,8 +119,25 @@ app.layout=html.Div(
 			value='20',
 			placeholder="Select Altitude (in kms)",
             style={'width':'60%', 'display': 'inline-block'}
-		)]
-        ),
+		),
+        dcc.Markdown('''
+        #### Integrated water vapor density
+        '''),
+        dcc.Dropdown(
+			id='wvs',
+			options=[
+						{'label':'Water vapor scale: 0.7, looking down from 70km, 0ppm co2','value': '0.7'},
+                        {'label':'Water vapor scale: 0.9, looking down from 70km, 0ppm co2','value': '0.9'},
+                        {'label':'Water vapor scale: 1.0, looking down from 70km, 0ppm co2','value': '1.0'},
+                        {'label':'Water vapor scale: 1.1, looking down from 70km, 0ppm co2','value': '1.1'},
+						{'label':'Water vapor scale: 1.3, looking down from 70km, 0ppm co2','value': '1.3'},
+					],
+			value='0.7',
+			placeholder="Select water vapor scale",
+            style={'width':'60%', 'display': 'inline-block'}
+		),
+        html.Div(id='wvs-text'),
+    ]),
 
         dbc.Col(dcc.Dropdown(
             id='xaxis_data',
@@ -190,30 +208,6 @@ def transm(altitude,co2,surf_trans,atmos_trans):
     fig.update_yaxes(title_text='Flux in W m-2 micron-1')
     fig.layout.height = 650
     fig.layout.width = 550
-    return fig
-# @app.callback(
-#     Output('rad-spec-1', 'figure'),
-#     Input('altitude','value'),
-#     Input('co2','value'),
-#     )  
-
-# def rad_spec_1(altitude,co2):
-#     the_dir = co2_dict[altitude][co2]
-#     dir_name = Path(the_dir)
-#     pqfile = dir_name / 'rad_spectrum.pq'
-#     df = pd.read_parquet(pqfile)
-#     wavelength_um = df[df.keys()[1]]
-#     tot_transm = df[df.keys()[-1]]
-#     total_rad = df[df.keys()[-3]]
-#     scaled_intensity = (tot_transm*planck(df[df.keys()[1]]*1e-6,300.))/1e6
-#     fig = go.Figure()
-#     fig.add_trace(go.Scatter(x=wavelength_um, y=tot_transm,
-#                     mode='lines',
-#                     name='Model'))
-#     fig.update_xaxes(title_text='Wavelength in micrometers', range=[0, 30])
-#     fig.update_yaxes(title_text='Total transmisivity')
-#     fig.layout.height = 600
-#     fig.layout.width = 550
     return fig
 
 @app.callback(
@@ -291,6 +285,28 @@ def atmos_profile(altitude,co2,xaxis_data):
     fig.layout.height = 700
     fig.layout.width = 450
     return fig
+
+@app.callback(
+        Output(component_id='wvs-text', component_property='children'),
+        [Input(component_id='wvs', component_property='value')],
+        )
+def calc_precitable_water(wsv):
+        dir_path = Path(wvs_dict[wsv])
+        pqfile = dir_path / 'mol_prof.pq'
+        df = pd.read_parquet(pqfile)
+        R_dry = 287
+        R_v = 461
+
+        rho_v = df['h2o'].values*100/(R_v*df['t'].values) ## convert to Pa from mbar for pressure
+        pressure_diff = df['p'].values - df['h2o'].values
+
+        rho_dry = (pressure_diff)*100/(R_dry*df['t'].values) ## ## convert to Pa from mbar for pressure
+        mix_ratio = rho_v/rho_dry
+        mid_rhov = (rho_v[1:] + rho_v[:-1])/2.
+        col_wv = np.sum(mid_rhov*np.diff(df['z'].values))*100
+        return "Precipitable water in cm: {} \n".format(round(col_wv,2))
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True,port=PORT,host=ADDRESS)
