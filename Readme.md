@@ -19,3 +19,17 @@
 
       conda activate modtran
       python dash-modtran.py
+      
+## Description
+Uses output data from MODTRAN to plot transmissivity and atmospheric profiles. 
+
+User has options of choosing two different altitudes (20 and 70 km) and four different co2 concentrations (0, 10, 100 and 1000 ppm).
+
+Dashboard also shows surface and top of atmosphere contributions in the transmissivity plot.
+
+Workflow for setting up the dashboard is described as follows:
+
+- Get data from David Archer's webpage
+- Put the output file into a folder and name them appropriately i.e., mod_1000_co2_70_dir for 1000 pm co2 and altitude at 70km.
+- Use a python script to create csv and pq files for each of these folders. These will serve as input for the dashboard
+- Create a dash-plotly script containing main elements of 
