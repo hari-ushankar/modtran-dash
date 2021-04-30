@@ -32,4 +32,9 @@ Workflow for setting up the dashboard is described as follows:
 - Get data from David Archer's webpage
 - Put the output file into a folder and name them appropriately i.e., mod_1000_co2_70_dir for 1000 pm co2 and altitude at 70km.
 - Use a python script to create csv and pq files for each of these folders. These will serve as input for the dashboard
-- Create a dash-plotly script containing main elements of 
+- Create a dash-plotly script containing main elements of the dashboard such as plots, checkboxes dropdowns and sections of text.
+
+
+Current state of dashboard:
+
+![modtran-dash](https://github.com/hari-ushankar/modtran-dash/blob/add_features/firefox_screenshot.JPG)
